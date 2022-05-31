@@ -74,11 +74,14 @@ export function createElementTexture(gl) {
 
 export function updateTexture(gl, texture, element) {
     if (element.readyState !== undefined && element.readyState === 0) return;
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
 
-    texture._isTextureCleared = false;
+    if(element.readyState === 4 && (element.webkitDecodedFrameCount || element.mozDecodedFrames)){
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
+
+        texture._isTextureCleared = false;
+    }
 }
 
 export function clearTexture(gl, texture) {
