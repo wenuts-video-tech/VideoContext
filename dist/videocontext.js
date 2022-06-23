@@ -3397,6 +3397,7 @@ var SourceNode = function (_GraphNode) {
 
                     if (callback.type === type) {
                         if (data !== undefined) {
+                            console.debug("calling " + type + " callback with data: " + data);
                             callback.func(this, data);
                         } else {
                             callback.func(this);
@@ -3602,7 +3603,9 @@ var SourceNode = function (_GraphNode) {
                 this._renderPaused = true;
             }
             if (this._state === STATE.playing) {
-                if (triggerTextureUpdate) (0, _utils.updateTexture)(this._gl, this._texture, this._element);
+                if (triggerTextureUpdate) {
+                    (0, _utils.updateTexture)(this._gl, this._texture, this._element);
+                }
                 if (this._stretchPaused) {
                     this._stopTime += timeDelta;
                 }
@@ -4607,13 +4610,11 @@ function createElementTexture(gl) {
 function updateTexture(gl, texture, element) {
     if (element.readyState !== undefined && element.readyState === 0) return;
 
-    if (element.readyState === 4 && (element.webkitDecodedFrameCount || element.mozDecodedFrames)) {
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
 
-        texture._isTextureCleared = false;
-    }
+    texture._isTextureCleared = false;
 }
 
 function clearTexture(gl, texture) {
@@ -5571,7 +5572,7 @@ var VideoContext = function () {
         this._canvas = canvas;
         this._endOnLastSourceEnd = endOnLastSourceEnd;
 
-        this._gl = canvas.getContext("experimental-webgl", Object.assign({ preserveDrawingBuffer: true }, // can be overriden
+        this._gl = canvas.getContext("webgl2", Object.assign({ preserveDrawingBuffer: true }, // can be overriden
         webglContextAttributes, { alpha: false // Can't be overriden because it is copied last
         }));
         if (this._gl === null) {
@@ -6923,6 +6924,7 @@ var EVENTS = Object.freeze({
     NOCONTENT: "nocontent"
 });
 VideoContext.EVENTS = EVENTS;
+VideoContext.SOURCENODESTATE = _sourcenode.SOURCENODESTATE;
 
 VideoContext.visualiseVideoContextTimeline = _utils.visualiseVideoContextTimeline;
 VideoContext.visualiseVideoContextGraph = _utils.visualiseVideoContextGraph;
