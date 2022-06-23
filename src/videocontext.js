@@ -68,7 +68,7 @@ export default class VideoContext {
         this._endOnLastSourceEnd = endOnLastSourceEnd;
 
         this._gl = canvas.getContext(
-            "experimental-webgl",
+            "webgl2",
             Object.assign(
                 { preserveDrawingBuffer: true }, // can be overriden
                 webglContextAttributes,
@@ -1047,6 +1047,7 @@ const EVENTS = Object.freeze({
     NOCONTENT: "nocontent"
 });
 VideoContext.EVENTS = EVENTS;
+VideoContext.SOURCENODESTATE = SOURCENODESTATE;
 
 VideoContext.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;

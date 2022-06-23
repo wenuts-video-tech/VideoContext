@@ -206,6 +206,7 @@ class SourceNode extends GraphNode {
         for (let callback of this._callbacks) {
             if (callback.type === type) {
                 if (data !== undefined) {
+                    console.debug("calling " + type + " callback with data: " + data);
                     callback.func(this, data);
                 } else {
                     callback.func(this);
@@ -398,7 +399,9 @@ class SourceNode extends GraphNode {
             this._renderPaused = true;
         }
         if (this._state === STATE.playing) {
-            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element);
+            if (triggerTextureUpdate) {
+                updateTexture(this._gl, this._texture, this._element);
+            }
             if (this._stretchPaused) {
                 this._stopTime += timeDelta;
             }
