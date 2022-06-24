@@ -8,6 +8,7 @@ class MediaNode extends SourceNode {
      */
     constructor(
         src,
+        uniqId,
         gl,
         renderGraph,
         currentTime,
@@ -17,7 +18,7 @@ class MediaNode extends SourceNode {
         mediaElementCache = undefined,
         attributes = {}
     ) {
-        super(src, gl, renderGraph, currentTime);
+        super(src, uniqId, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;

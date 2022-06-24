@@ -460,9 +460,10 @@ export default class VideoContext {
      * var ctx = new VideoContext(canvasElement);
      * var videoNode = ctx.video("bigbuckbunny.mp4");
      */
-    video(src, sourceOffset = 0, preloadTime = 4, videoElementAttributes = {}) {
+    video(src, uniqId, sourceOffset = 0, preloadTime = 4, videoElementAttributes = {}) {
         let videoNode = new VideoNode(
             src,
+            uniqId,
             this._gl,
             this._renderGraph,
             this._currentTime,
@@ -489,9 +490,10 @@ export default class VideoContext {
      * var ctx = new VideoContext(canvasElement);
      * var audioNode = ctx.audio("ziggystardust.mp3");
      */
-    audio(src, sourceOffset = 0, preloadTime = 4, audioElementAttributes = {}) {
+    audio(src, uniqId, sourceOffset = 0, preloadTime = 4, audioElementAttributes = {}) {
         let audioNode = new AudioNode(
             src,
+            uniqId,
             this._gl,
             this._renderGraph,
             this._currentTime,
@@ -533,9 +535,10 @@ export default class VideoContext {
      * var ctx = new VideoContext(canvasElement);
      * var imageNode = ctx.image(imageElement);
      */
-    image(src, preloadTime = 4, imageElementAttributes = {}) {
+    image(src, uniqId, preloadTime = 4, imageElementAttributes = {}) {
         let imageNode = new ImageNode(
             src,
+            uniqId,
             this._gl,
             this._renderGraph,
             this._currentTime,
@@ -561,8 +564,8 @@ export default class VideoContext {
      * @param {Canvas} src - The canvas element to create the canvas node from.
      * @return {CanvasNode} A new canvas node.
      */
-    canvas(canvas) {
-        let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._currentTime);
+    canvas(canvas, uniqId) {
+        let canvasNode = new CanvasNode(canvas, uniqId, this._gl, this._renderGraph, this._currentTime);
         this._sourceNodes.push(canvasNode);
         return canvasNode;
     }
@@ -1002,12 +1005,17 @@ export default class VideoContext {
         return NODES;
     }
 
+    static get SOURCENODESTATE() {
+        return SOURCENODESTATE;
+    }
+
     /**
      * Get a JS Object containing the state of the VideoContext instance and all the created nodes.
      */
     snapshot() {
         return snapshot(this);
     }
+
 }
 
 /**
@@ -1047,7 +1055,6 @@ const EVENTS = Object.freeze({
     NOCONTENT: "nocontent"
 });
 VideoContext.EVENTS = EVENTS;
-VideoContext.SOURCENODESTATE = SOURCENODESTATE;
 
 VideoContext.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;

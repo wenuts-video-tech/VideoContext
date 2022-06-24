@@ -18,11 +18,12 @@ class SourceNode extends GraphNode {
      * Initialise an instance of a SourceNode.
      * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
      */
-    constructor(src, gl, renderGraph, currentTime) {
+    constructor(src, uniqId, gl, renderGraph, currentTime) {
         super(gl, renderGraph, [], true);
         this._element = undefined;
         this._elementURL = undefined;
         this._isResponsibleForElementLifeCycle = true;
+        this._uniqId = uniqId;
 
         if (
             typeof src === "string" ||
@@ -139,6 +140,10 @@ class SourceNode extends GraphNode {
 
     get stretchPaused() {
         return this._stretchPaused;
+    }
+
+    get uniqId() {
+        return this._uniqId;
     }
 
     _load() {

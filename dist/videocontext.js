@@ -1,3 +1,8 @@
+/* eslint-disable no-unsafe-finally */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+/* eslint-disable no-unexpected-multiline */
+
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2545,12 +2550,12 @@ var CanvasNode = function (_SourceNode) {
      * Initialise an instance of a CanvasNode.
      * This should not be called directly, but created through a call to videoContext.createCanvasNode();
      */
-    function CanvasNode(canvas, gl, renderGraph, currentTime) {
-        var preloadTime = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 4;
+    function CanvasNode(canvas, uniqId, gl, renderGraph, currentTime) {
+        var preloadTime = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 4;
 
         _classCallCheck(this, CanvasNode);
 
-        var _this = _possibleConstructorReturn(this, (CanvasNode.__proto__ || Object.getPrototypeOf(CanvasNode)).call(this, canvas, gl, renderGraph, currentTime));
+        var _this = _possibleConstructorReturn(this, (CanvasNode.__proto__ || Object.getPrototypeOf(CanvasNode)).call(this, canvas, uniqId, gl, renderGraph, currentTime));
 
         _this._preloadTime = preloadTime;
         _this._displayName = TYPE;
@@ -2649,13 +2654,13 @@ var ImageNode = function (_SourceNode) {
      * Initialise an instance of an ImageNode.
      * This should not be called directly, but created through a call to videoContext.createImageNode();
      */
-    function ImageNode(src, gl, renderGraph, currentTime) {
-        var preloadTime = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 4;
-        var attributes = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
+    function ImageNode(src, uniqId, gl, renderGraph, currentTime) {
+        var preloadTime = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 4;
+        var attributes = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : {};
 
         _classCallCheck(this, ImageNode);
 
-        var _this = _possibleConstructorReturn(this, (ImageNode.__proto__ || Object.getPrototypeOf(ImageNode)).call(this, src, gl, renderGraph, currentTime));
+        var _this = _possibleConstructorReturn(this, (ImageNode.__proto__ || Object.getPrototypeOf(ImageNode)).call(this, src, uniqId, gl, renderGraph, currentTime));
 
         _this._preloadTime = preloadTime;
         _this._attributes = attributes;
@@ -2814,16 +2819,16 @@ var MediaNode = function (_SourceNode) {
      * Initialise an instance of a MediaNode.
      * This should not be called directly, but extended by other Node Types which use a `HTMLMediaElement`.
      */
-    function MediaNode(src, gl, renderGraph, currentTime) {
-        var globalPlaybackRate = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1.0;
-        var sourceOffset = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-        var preloadTime = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 4;
-        var mediaElementCache = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : undefined;
-        var attributes = arguments.length > 8 && arguments[8] !== undefined ? arguments[8] : {};
+    function MediaNode(src, uniqId, gl, renderGraph, currentTime) {
+        var globalPlaybackRate = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1.0;
+        var sourceOffset = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
+        var preloadTime = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 4;
+        var mediaElementCache = arguments.length > 8 && arguments[8] !== undefined ? arguments[8] : undefined;
+        var attributes = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : {};
 
         _classCallCheck(this, MediaNode);
 
-        var _this = _possibleConstructorReturn(this, (MediaNode.__proto__ || Object.getPrototypeOf(MediaNode)).call(this, src, gl, renderGraph, currentTime));
+        var _this = _possibleConstructorReturn(this, (MediaNode.__proto__ || Object.getPrototypeOf(MediaNode)).call(this, src, uniqId, gl, renderGraph, currentTime));
 
         _this._preloadTime = preloadTime;
         _this._sourceOffset = sourceOffset;
@@ -3217,7 +3222,7 @@ var SourceNode = function (_GraphNode) {
      * Initialise an instance of a SourceNode.
      * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
      */
-    function SourceNode(src, gl, renderGraph, currentTime) {
+    function SourceNode(src, uniqId, gl, renderGraph, currentTime) {
         _classCallCheck(this, SourceNode);
 
         var _this = _possibleConstructorReturn(this, (SourceNode.__proto__ || Object.getPrototypeOf(SourceNode)).call(this, gl, renderGraph, [], true));
@@ -3225,6 +3230,7 @@ var SourceNode = function (_GraphNode) {
         _this._element = undefined;
         _this._elementURL = undefined;
         _this._isResponsibleForElementLifeCycle = true;
+        _this._uniqId = uniqId;
 
         if (typeof src === "string" || window.MediaStream !== undefined && src instanceof MediaStream) {
             //create the node from the passed URL or MediaStream
@@ -3714,6 +3720,11 @@ var SourceNode = function (_GraphNode) {
         },
         get: function get() {
             return this._stretchPaused;
+        }
+    }, {
+        key: "uniqId",
+        get: function get() {
+            return this._uniqId;
         }
     }, {
         key: "startTime",
@@ -5883,12 +5894,12 @@ var VideoContext = function () {
 
     }, {
         key: "video",
-        value: function video(src) {
-            var sourceOffset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-            var preloadTime = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
-            var videoElementAttributes = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        value: function video(src, uniqId) {
+            var sourceOffset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+            var preloadTime = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 4;
+            var videoElementAttributes = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
-            var videoNode = new _videonode2.default(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._videoElementCache, videoElementAttributes);
+            var videoNode = new _videonode2.default(src, uniqId, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._videoElementCache, videoElementAttributes);
             this._sourceNodes.push(videoNode);
             return videoNode;
         }
@@ -5909,12 +5920,12 @@ var VideoContext = function () {
 
     }, {
         key: "audio",
-        value: function audio(src) {
-            var sourceOffset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-            var preloadTime = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
-            var audioElementAttributes = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        value: function audio(src, uniqId) {
+            var sourceOffset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+            var preloadTime = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 4;
+            var audioElementAttributes = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
 
-            var audioNode = new _audionode2.default(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._audioElementCache, audioElementAttributes);
+            var audioNode = new _audionode2.default(src, uniqId, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._audioElementCache, audioElementAttributes);
             this._sourceNodes.push(audioNode);
             return audioNode;
         }
@@ -5955,11 +5966,11 @@ var VideoContext = function () {
 
     }, {
         key: "image",
-        value: function image(src) {
-            var preloadTime = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
-            var imageElementAttributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+        value: function image(src, uniqId) {
+            var preloadTime = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 4;
+            var imageElementAttributes = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
-            var imageNode = new _imagenode2.default(src, this._gl, this._renderGraph, this._currentTime, preloadTime, imageElementAttributes);
+            var imageNode = new _imagenode2.default(src, uniqId, this._gl, this._renderGraph, this._currentTime, preloadTime, imageElementAttributes);
             this._sourceNodes.push(imageNode);
             return imageNode;
         }
@@ -5987,8 +5998,8 @@ var VideoContext = function () {
 
     }, {
         key: "canvas",
-        value: function canvas(_canvas) {
-            var canvasNode = new _canvasnode2.default(_canvas, this._gl, this._renderGraph, this._currentTime);
+        value: function canvas(_canvas, uniqId) {
+            var canvasNode = new _canvasnode2.default(_canvas, uniqId, this._gl, this._renderGraph, this._currentTime);
             this._sourceNodes.push(canvasNode);
             return canvasNode;
         }
@@ -6879,6 +6890,11 @@ var VideoContext = function () {
         get: function get() {
             return _nodes2.default;
         }
+    }, {
+        key: "SOURCENODESTATE",
+        get: function get() {
+            return _sourcenode.SOURCENODESTATE;
+        }
     }]);
 
     return VideoContext;
@@ -6924,7 +6940,6 @@ var EVENTS = Object.freeze({
     NOCONTENT: "nocontent"
 });
 VideoContext.EVENTS = EVENTS;
-VideoContext.SOURCENODESTATE = _sourcenode.SOURCENODESTATE;
 
 VideoContext.visualiseVideoContextTimeline = _utils.visualiseVideoContextTimeline;
 VideoContext.visualiseVideoContextGraph = _utils.visualiseVideoContextGraph;

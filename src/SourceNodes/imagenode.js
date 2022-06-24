@@ -7,8 +7,8 @@ class ImageNode extends SourceNode {
      * Initialise an instance of an ImageNode.
      * This should not be called directly, but created through a call to videoContext.createImageNode();
      */
-    constructor(src, gl, renderGraph, currentTime, preloadTime = 4, attributes = {}) {
-        super(src, gl, renderGraph, currentTime);
+    constructor(src, uniqId, gl, renderGraph, currentTime, preloadTime = 4, attributes = {}) {
+        super(src, uniqId, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._attributes = attributes;
         this._textureUploaded = false;
