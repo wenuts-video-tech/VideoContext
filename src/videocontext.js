@@ -565,7 +565,13 @@ export default class VideoContext {
      * @return {CanvasNode} A new canvas node.
      */
     canvas(canvas, uniqId) {
-        let canvasNode = new CanvasNode(canvas, uniqId, this._gl, this._renderGraph, this._currentTime);
+        let canvasNode = new CanvasNode(
+            canvas,
+            uniqId,
+            this._gl,
+            this._renderGraph,
+            this._currentTime
+        );
         this._sourceNodes.push(canvasNode);
         return canvasNode;
     }
@@ -1015,7 +1021,6 @@ export default class VideoContext {
     snapshot() {
         return snapshot(this);
     }
-
 }
 
 /**

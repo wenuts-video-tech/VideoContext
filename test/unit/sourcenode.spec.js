@@ -20,7 +20,7 @@ describe("_update", () => {
     test("updatesTexture if currentTime is changed and ctx is PAUSED and node is ready", () => {
         const updateTextureSpy = sinon.spy(utils, "updateTexture");
         const currentTime = 0;
-        const node = new SourceNode(ELEMENT, mockGLContext, mockRenderGraph, currentTime);
+        const node = new SourceNode(ELEMENT, "uniqId", mockGLContext, mockRenderGraph, currentTime);
 
         node.startAt(currentTime);
 
