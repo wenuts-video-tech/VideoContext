@@ -81,6 +81,21 @@ class MediaNode extends SourceNode {
         if (this._element !== undefined) this._element.volume = this._attributes.volume;
     }
 
+    set sourceOffset(offset) {
+        this._sourceOffset = offset;
+        if (this._element) {
+            let currentTimeOffset = 0;
+            if (this._currentTime > this._startTime) {
+                currentTimeOffset = this._currentTime - this._startTime;
+            }
+            this._element.currentTime = this._sourceOffset + currentTimeOffset;
+        }
+    }
+
+    get sourceOffset() {
+        return this._sourceOffset;
+    }
+
     _triggerLoad() {
         // If the user hasn't supplied an element, videocontext is responsible for the element
         if (this._isResponsibleForElementLifeCycle) {
