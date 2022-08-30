@@ -68,7 +68,7 @@ export default class VideoContext {
         this._endOnLastSourceEnd = endOnLastSourceEnd;
 
         this._gl = canvas.getContext(
-            "webgl2",
+            "experimental-webgl",
             Object.assign(
                 { preserveDrawingBuffer: true }, // can be overriden
                 webglContextAttributes,
@@ -137,6 +137,10 @@ export default class VideoContext {
             console.warn("Warning; setting id to that of an existing VideoContext instance.");
         window.__VIDEOCONTEXT_REFS__[newID] = this;
         this._id = newID;
+    }
+
+    resizeViewport() {
+        this._gl.viewport(0, 0, this._gl.canvas.width, this._gl.canvas.height);
     }
 
     /**
@@ -681,9 +685,10 @@ export default class VideoContext {
      * @param {Object} src
      * @param  {...any} options
      */
-    customSourceNode(CustomSourceNode, src, ...options) {
+    customSourceNode(CustomSourceNode, uniqId, src, ...options) {
         const customSourceNode = new CustomSourceNode(
             src,
+            uniqId,
             this._gl,
             this._renderGraph,
             this._currentTime,

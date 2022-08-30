@@ -158,6 +158,10 @@ class SourceNode extends GraphNode {
         this._loadCalled = false;
     }
 
+    resize(size) {
+        return !size;
+    }
+
     /**
      * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
      *
@@ -211,7 +215,7 @@ class SourceNode extends GraphNode {
         for (let callback of this._callbacks) {
             if (callback.type === type) {
                 if (data !== undefined) {
-                    console.debug("calling " + type + " callback with data: " + data);
+                    // console.debug("calling " + type + " callback with data: " + data);
                     callback.func(this, data);
                 } else {
                     callback.func(this);
