@@ -3106,6 +3106,21 @@ var MediaNode = function (_SourceNode) {
             this._attributes.volume = volume;
             if (this._element !== undefined) this._element.volume = this._attributes.volume;
         }
+    }, {
+        key: "sourceOffset",
+        set: function set(offset) {
+            this._sourceOffset = offset;
+            if (this._element) {
+                var currentTimeOffset = 0;
+                if (this._currentTime > this._startTime) {
+                    currentTimeOffset = this._currentTime - this._startTime;
+                }
+                this._element.currentTime = this._sourceOffset + currentTimeOffset;
+            }
+        },
+        get: function get() {
+            return this._sourceOffset;
+        }
     }]);
 
     return MediaNode;
@@ -3292,6 +3307,11 @@ var SourceNode = function (_GraphNode) {
             this._triggerCallbacks("destroy");
             this._loadCalled = false;
         }
+    }, {
+        key: "resize",
+        value: function resize(size) {
+            return !size;
+        }
 
         /**
          * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
@@ -3403,7 +3423,7 @@ var SourceNode = function (_GraphNode) {
 
                     if (callback.type === type) {
                         if (data !== undefined) {
-                            console.debug("calling " + type + " callback with data: " + data);
+                            // console.debug("calling " + type + " callback with data: " + data);
                             callback.func(this, data);
                         } else {
                             callback.func(this);
@@ -5583,7 +5603,7 @@ var VideoContext = function () {
         this._canvas = canvas;
         this._endOnLastSourceEnd = endOnLastSourceEnd;
 
-        this._gl = canvas.getContext("webgl2", Object.assign({ preserveDrawingBuffer: true }, // can be overriden
+        this._gl = canvas.getContext("experimental-webgl", Object.assign({ preserveDrawingBuffer: true }, // can be overriden
         webglContextAttributes, { alpha: false // Can't be overriden because it is copied last
         }));
         if (this._gl === null) {
@@ -5638,8 +5658,10 @@ var VideoContext = function () {
 
 
     _createClass(VideoContext, [{
-        key: "registerTimelineCallback",
-
+        key: "resizeViewport",
+        value: function resizeViewport() {
+            this._gl.viewport(0, 0, this._gl.canvas.width, this._gl.canvas.height);
+        }
 
         /**
          * Register a callback to happen at a specific point in time.
@@ -5647,6 +5669,9 @@ var VideoContext = function () {
          * @param {Function} func - the callback to register.
          * @param {number} ordering - the order in which to call the callback if more than one is registered for the same time.
          */
+
+    }, {
+        key: "registerTimelineCallback",
         value: function registerTimelineCallback(time, func) {
             var ordering = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
@@ -6123,12 +6148,12 @@ var VideoContext = function () {
 
     }, {
         key: "customSourceNode",
-        value: function customSourceNode(CustomSourceNode, src) {
-            for (var _len = arguments.length, options = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-                options[_key - 2] = arguments[_key];
+        value: function customSourceNode(CustomSourceNode, uniqId, src) {
+            for (var _len = arguments.length, options = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+                options[_key - 3] = arguments[_key];
             }
 
-            var customSourceNode = new (Function.prototype.bind.apply(CustomSourceNode, [null].concat([src, this._gl, this._renderGraph, this._currentTime], options)))();
+            var customSourceNode = new (Function.prototype.bind.apply(CustomSourceNode, [null].concat([src, uniqId, this._gl, this._renderGraph, this._currentTime], options)))();
             this._sourceNodes.push(customSourceNode);
             return customSourceNode;
         }
